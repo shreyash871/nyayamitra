@@ -12,10 +12,10 @@ from app.models import BnsMapping
 
 # Judgment prose: "punishable under Sections 120B, 420, 379 of the Indian Penal Code"
 SECTION_LIST = re.compile(
-    r"(?:under\s+)?(?:Sections?|Secs?\.?|u/s)\s+"
+    r"(?:under\s+)?(?:Sections?|Secs?\.?|ss?\.|u/s)\s+"
     r"([0-9A-Z,\s\-()]{1,80}?)"
-    r"\s+(?:of\s+the\s+)?"
-    r"(IPC|Indian Penal Code|BNS|Bharatiya Nyaya Sanhita)",
+    r"\s*,?\s*(?:of\s+)?(?:the\s+)?"
+    r"(IPC|I\.P\.C\.?|Indian Penal Code|Penal Code|BNS|Bharatiya Nyaya Sanhita)",
     re.IGNORECASE,
 )
 
