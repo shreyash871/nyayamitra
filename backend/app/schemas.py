@@ -48,3 +48,23 @@ class BridgeResponse(BaseModel):
     expanded: list[str]
     offence: str | None = None
     change_type: str | None = None
+
+
+class AskRequest(BaseModel):
+    question: str = Field(..., min_length=10, max_length=1000)
+    k: int = Field(3, ge=1, le=5)
+
+
+class AskSource(BaseModel):
+    judgment_id: int
+    year: int | None
+    case_no: str | None
+    similarity: float
+
+
+class AskResponse(BaseModel):
+    question: str
+    answer: str | None
+    grounded: bool
+    reason: str | None
+    sources: list[AskSource]

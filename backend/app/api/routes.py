@@ -6,13 +6,15 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.models import Judgment, JudgmentChunk
 from app.schemas import (
+    AskRequest,
+    AskResponse,
     BridgeResponse,
     JudgmentDetail,
     SearchRequest,
     SearchResponse,
 )
 from app.services.bns_bridge import expand, expand_query, lookup
-from app.services.search import hybrid_search, search
+from app.services.search import hybrid_search, rag_answer, search
 
 router = APIRouter()
 
@@ -100,3 +102,17 @@ def corpus_stats(db: Session = Depends(get_db)):
         "chunks": chunks,
         "chunks_embedded": embedded,
     }
+
+
+@router.post("/ask", response_model=AskResponse)
+def ask(req: AskRequest, db: Session = Depends(get_db)):
+    """Grounded legal Q&A over the judgment corpus.
+
+    The LLM is invoked only when retrieval clears the similarity floor.
+    Otherwise grounded=false and no answer is generated - a hard code
+    path, not a prompt instruction.
+
+    Generation runs on CPU: expect 60-120 seconds for a grounded answer,
+    under 2 seconds when the gate rejects.
+    """
+    return rag_answer(db, req.question, k=req.k)
